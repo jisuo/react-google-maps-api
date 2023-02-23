@@ -41,10 +41,23 @@ export function useJsApiLoader({
     }
   }, [])
 
-  const loader = useMemo(function memo() {
-    return new Loader({
+  const loader = useMemo(
+    function memo() {
+      return new Loader({
+        id,
+        apiKey: googleMapsApiKey,
+        version,
+        libraries,
+        language,
+        region,
+        mapIds,
+        nonce,
+        authReferrerPolicy,
+      })
+    },
+    [
       id,
-      apiKey: googleMapsApiKey,
+      googleMapsApiKey,
       version,
       libraries,
       language,
@@ -52,22 +65,24 @@ export function useJsApiLoader({
       mapIds,
       nonce,
       authReferrerPolicy,
-    })
-  }, [id, googleMapsApiKey, version, libraries, language, region, mapIds, nonce, authReferrerPolicy])
+    ]
+  )
 
   useEffect(function effect() {
     if (isLoaded) {
       return
     } else {
-      loader.load().then(function then() {
-        if (isMounted.current) setLoaded(true)
-      })
-      .catch(function onrejected(error) {
-        setLoadError(error)
-      })
+      loader
+        .load()
+        .then(function then() {
+          if (isMounted.current) setLoaded(true)
+          return true
+        })
+        .catch(function onrejected(error) {
+          setLoadError(error)
+        })
     }
   }, [])
-
 
   useEffect(
     function applyPreventGoogleFonts() {
